@@ -5,6 +5,7 @@ import scanpy
 from copy import copy
 import pickle
 
+
 def all_genes_present(check_list, gene_library):
     return all([gene in gene_library for gene in check_list])
 
@@ -13,6 +14,7 @@ def get_cell_type(dataset, cell_type):
     '''returns only the cells of cell_type from dataset'''
     mask = dataset.obs['ct_cov'] == cell_type
     return dataset[mask]
+
 
 def separate_by_celltype(dataset):
     '''returns cell types present in dataset and a dictionary mapping each cell_type name to the dataset of cells in
@@ -24,8 +26,9 @@ def separate_by_celltype(dataset):
         cells_dict[ct] = copy(specific_cells)
     return cell_types, cells_dict
 
-ligand_recep_db = pd.read_csv('NATMI/lrdbs/lrc2p.csv')
-samples_path = 'main/longitudinal_samples_healthy/'
+
+ligand_recep_db = pd.read_csv('../NATMI/lrdbs/lrc2p.csv')
+samples_path = '../longitudinal_samples_healthy/'
 sample_name = 'IGTB1290_batch0.h5ad'
 sample = scanpy.read_h5ad(samples_path+sample_name)
 gene_library = sample.to_df().columns
