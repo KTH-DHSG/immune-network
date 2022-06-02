@@ -12,7 +12,7 @@ for p in patients:
     for d in days:
         patient_day_data = patient_data[patient_data.obs['days'] == d]
         condition = patient_day_data.obs['condition'][0]
-        file_name = 'patient'+ p + '_day' + f'{int(d):02d}' + '_' + condition
+        file_name = 'patient'+ p + '_day' + "{:02d}".format(d) + '_' + condition
         scanpy.write(file_name, patient_day_data)
 
 
