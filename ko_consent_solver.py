@@ -53,8 +53,8 @@ nnodes = 5
 A, d = get_sparse_network(nnodes=nnodes, sparsity=0.4)
 network_dynamics = net_dynamics(A, d)
 knock_outs = [[i, j] for i in range(nnodes) for j in range(nnodes) if i!=j]
-# knock_outs.append([])
-knock_outs = knock_outs[0:6]
+knock_outs.append([])
+# knock_outs = knock_outs[0:6]
 experiment_numbers = np.zeros((0, ))
 row_numbers = np.zeros((0, ))
 
@@ -111,4 +111,24 @@ m.setObjective(gp.quicksum(err)-rho*gp.quicksum([a[i, i] for i in range(nnodes)]
 # Optimize model
 m.optimize()
 
+fig, ax = plt.subplots()
+im = ax.imshow(a.X)
+plt.title('Identified network')
+for i in range(nnodes):
+    for j in range(nnodes):
+        text = ax.text(j, i, "{:10.1f}".format(a.X[i, j]),
+                       ha="center", va="center", color="w")
+
+fig, ax = plt.subplots()
+im = ax.imshow(network_dynamics.dynA)
+plt.title('Network')
+for i in range(nnodes):
+    for j in range(nnodes):
+        text = ax.text(j, i, "{:10.1f}".format(network_dynamics.dynA[i, j]),
+                       ha="center", va="center", color="w")
+plt.show()
+
+
+# ax.set_xticks(np.arange(len(cell_types)), labels=cell_types)
+# ax.set_yticks(np.arange(len(cell_types)), labels=cell_types)
 print('hi')

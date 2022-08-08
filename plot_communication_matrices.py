@@ -16,7 +16,7 @@ for f in files:
 
     sum_of_specificity = np.nansum(matrices, axis=2)
     normalized_sum = sum_of_specificity / np.max(sum_of_specificity)
-
+    sum_of_specificity = sum_of_specificity
     fig, ax = plt.subplots()
     im = ax.imshow(sum_of_specificity)
 
@@ -35,5 +35,6 @@ for f in files:
 
     ax.set_title("Sum of specificity in ligand-receptor communication")
     fig.set_size_inches(18.5, 10.5)
-    plt.savefig(folder+f.replace('pickle', 'png'))
-    plt.close()
+    plt.show()
+    # plt.savefig(folder+f.replace('pickle', 'png'))
+    # plt.close()
