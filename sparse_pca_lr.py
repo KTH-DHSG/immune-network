@@ -8,7 +8,7 @@ patient = 'A'
 
 import os
 
-folder = 'covid_data/'
+folder = '../covid_data/'
 files = [f for f in os.listdir(folder) if 'pickle' in f]
 
 spec_type = 'mean' # mean or sum

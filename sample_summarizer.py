@@ -43,3 +43,6 @@ for sample_name in sample_names:
 
     with open('covid_data_summary/' + sample_name + '_summary.pickle', 'wb') as handle:
         pickle.dump(sample_summary, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+with open('../covid_data_summary/gene_list.pickle', 'wb') as handle:
+    pickle.dump(sample.var_names, handle, protocol=pickle.HIGHEST_PROTOCOL)
