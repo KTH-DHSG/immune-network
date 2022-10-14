@@ -85,17 +85,20 @@ for t in timepoints:
 
 untreated_expression = gene_expressions['UT']
 
-threshholds = list(np.arange(0.5, 5.0, 0.5))
-regs = list(np.logspace(-1, -5, 9))
-
+threshholds = list(np.arange(0.5, 5.0, 0.2))
+regs = list(np.logspace(-1, -7, 13))
+n_select_genes = 10
+target_timepoints = '24'
+gene_file_name = target_timepoints + 'hour_response_genes.pickle'
+tot_genes_up = set()
+tot_genes_down = set()
 for reg in regs:
-    gene_count = []
     for threshhold in threshholds:
         genes = np.array(genes)
-        tot_genes_up = []
-        tot_genes_down = []
+        genes_up = []
+        genes_down = []
         for st in timepoints:
-            if st == 'UT':
+            if target_timepoints not in st:
                 continue
             stimulated_expression = gene_expressions[st]
             diff = np.log2(stimulated_expression + reg) - np.log2(untreated_expression + reg)
@@ -105,13 +108,19 @@ for reg in regs:
             gene_votes = np.sum(significant_diff, axis=0)
             gene_votes_up = np.sum(significant_upreg, axis=0)
             gene_votes_down = np.sum(significant_downreg, axis=0)
-            tot_genes_up += list(genes[np.where(gene_votes_up > 100)[0]])
-            tot_genes_down += list(genes[np.where(gene_votes_down > 100)[0]])
-        gene_count += [len(set(tot_genes_up + tot_genes_down))]
-    plt.plot(gene_count)
-plt.show()
+            genes_up += list(genes[np.where(gene_votes_up > 100)[0]])
+            genes_down += list(genes[np.where(gene_votes_down > 100)[0]])
+        gene_count = len(set(genes_up + genes_down))
+        if gene_count < n_select_genes:
+            tot_genes_up = tot_genes_up.union(genes_up)
+            tot_genes_down = tot_genes_down.union(genes_down)
+            break
 
-
+tot_genes = {'up': tot_genes_up, 'down': tot_genes_down}
+with open(samples_path + gene_file_name, 'wb') as handle:
+    dump(tot_genes, handle)
+print(tot_genes_up)
+print(tot_genes_down)
 
     # print(st)
     # print(genes[np.where(gene_votes > 100)[0]])
