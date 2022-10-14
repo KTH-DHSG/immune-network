@@ -9,9 +9,9 @@ files = [f for f in os.listdir(folder) if 'pickle' in f]
 with open(folder + "gene_list.pickle", "rb") as f:
     gene_list = pickle.load(f)
 
-cell_types_of_interest = ['NK']
-expression_type = 'sum' # mean or sum
-cell_specific_points = True
+cell_types_of_interest = ['Monocytes']
+expression_type = 'sum'  # mean or sum
+cell_specific_points = False
 days = []
 sos_vectors = None
 patient = ''
@@ -30,8 +30,8 @@ for f in files:
     tot_expression = None
     tot_count = 0
     for ct in summary_dict.keys():
-        if ct not in cell_types_of_interest:
-            continue
+        # if ct not in cell_types_of_interest:
+        #     continue
         if tot_expression is None:
             tot_expression = np.zeros(summary_dict[ct]['gene_expression'].shape)
             mean_expression = np.zeros(summary_dict[ct]['gene_expression'].shape)
@@ -54,11 +54,11 @@ else:
         data = tot_expressions
 
 n_components = 3
-transformer = SparsePCA(n_components=n_components, random_state=0)
-transformer.fit(data)
-# pickle.dump(transformer, open("gene_expression_pca_patients.pkl", "wb"))
-# with open("gene_expression_pca_patients.pkl", "rb") as f:
-#     transformer = pickle.load(f)
+# transformer = SparsePCA(n_components=n_components, random_state=0)
+# transformer.fit(data)
+# pickle.dump(transformer, open("gene_expression_pca_selective_onlyMono.pkl", "wb"))
+with open("gene_expression_pca_patients.pkl", "rb") as f:
+    transformer = pickle.load(f)
 
 print("The significant genes are:")
 for i in range(n_components):
@@ -122,5 +122,5 @@ else:
 ax.set_xlabel('LV0')
 ax.set_ylabel('LV1')
 ax.set_zlabel('LV2')
-
+# plt.savefig()
 plt.show()
