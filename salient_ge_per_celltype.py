@@ -6,40 +6,11 @@ import matplotlib.pyplot as plt
 import os
 import pandas as pd
 from collections import defaultdict
+from plotting_tools import plot_multi_hist
 
-
-def plot_multi_hist(data_sets, number_of_bins, labels, xlabel="Data sets", ylabel="Data values", title='', hist_range=None):
-    # Computed quantities to aid plotting
-    if hist_range is None:
-        hist_range = (np.nanmin(data_sets), np.nanmax(data_sets))
-    binned_data_sets = [
-        np.histogram(d, range=hist_range, bins=number_of_bins)[0]
-        for d in data_sets
-    ]
-    binned_maximums = np.max(binned_data_sets, axis=1)
-    # x_locations = np.concatenate((np.array([0]), np.cumsum(binned_maximums)[:-1]), axis=0)
-    x_locations = np.cumsum(binned_maximums)/2.0
-    x_locations[1:] += np.cumsum(binned_maximums[:-1])/2.0
-    # The bin_edges are the same for all histograms
-    bin_edges = np.linspace(hist_range[0], hist_range[1], number_of_bins + 1)
-    centers = 0.5 * (bin_edges + np.roll(bin_edges, 1))[1:]
-    heights = np.diff(bin_edges)
-
-    # Cycle through and plot each histogram
-    fig, ax = plt.subplots()
-    for x_loc, binned_data in zip(x_locations, binned_data_sets):
-        lefts = x_loc - 0.5 * binned_data
-        ax.barh(centers, binned_data, height=heights, left=lefts)
-
-    ax.set_xticks(x_locations)
-    ax.set_xticklabels(labels)
-
-    ax.set_ylabel(ylabel)
-    ax.set_xlabel(xlabel)
-    plt.title(title)
 
 samples_path = '../120Samples/OriginalData/cell_type_specific_expressions/full/'
-target_path = '../120Samples/OriginalData/cell_type_specific_expressions/3h genes/'
+target_path = '..   /120Samples/OriginalData/cell_type_specific_expressions/3h genes/'
 salient_genes_file = '../120Samples/OriginalData/3hour_response_genes.pickle'
 
 with open(salient_genes_file, 'rb') as handle:
@@ -104,7 +75,7 @@ for tg in timepoint_groups:
         labels = [gene_name + '_' + ct for gene_name in salient_genes]
         plot_multi_hist([np.log10(tot_express[tg][ct][g + '_' + ct]+0.00001) for g in salient_genes], 20,
                         labels=[g for g in salient_genes], hist_range=[-5, 0], title=ct + ' at ' + tg)
-        plt.gcf().set_size_inches(22.5, 10.5)
-        plt.savefig(target_path + 'salient_genes_' + ct + ' at ' + tg + '.png')
+        plt.gcf().set_size_inches(50, 20.0)
+        plt.savefig(target_path + 'salient_genes_' + ct + ' at ' + tg + '.png', dpi=300)
         # plt.show()
         plt.close()

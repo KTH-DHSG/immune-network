@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 samples_path = '../120Samples/OriginalData/'
 db_name = 'adata_all.h5ad' # obs = ['celltype_sub', 'celltype', 'subject', 'timepoint', '10Xchemistry']
 
-'''Getting and writing significant average expression changes'''
+'''Getting and writing significant average expressions'''
 # data = scanpy.read_h5ad(samples_path+db_name)
 #
 # donors = sorted(set(data.obs['subject']))
@@ -14,20 +14,22 @@ db_name = 'adata_all.h5ad' # obs = ['celltype_sub', 'celltype', 'subject', 'time
 # timepoints = set(data.obs['timepoint'])
 # genes = list(data.var_names)
 #
-# obs_info = {'subject': donors, 'cell_types': cell_types, 'timepoints': timepoints, 'genes':genes}
-# with open(samples_path+'obs_info.pickle', 'wb') as handle:
-#     dump(obs_info, handle)
-
+# # obs_info = {'subject': donors, 'cell_types': cell_types, 'timepoints': timepoints, 'genes':genes}
+# # with open(samples_path+'obs_info.pickle', 'wb') as handle:
+# #     dump(obs_info, handle)
+#
 # for t in timepoints:
-#     expression_matrix = np.zeros((len(donors), len(genes)))
-#     for d in range(len(donors)):
-#         mask = (data.obs['timepoint'] == t) & (data.obs['subject'] == donors[d])
-#         if np.sum(mask) < 100:
-#             continue
-#         mean_expression = np.mean(data[mask].X, axis=0)
-#         expression_matrix[d, :] = mean_expression
-#     with open(samples_path + 'mean_gene_expression_' + t + '.pickle', 'wb') as handle:
-#         dump(expression_matrix, handle)
+#     for ct in cell_types:
+#         expression_matrix = np.zeros((len(donors), len(genes)))
+#         for d in range(len(donors)):
+#             mask = (data.obs['timepoint'] == t) & (data.obs['subject'] == donors[d])
+#             mask = mask & (data.obs['celltype'] == ct)
+#             if np.sum(mask) < 100:
+#                 continue
+#             mean_expression = np.mean(data[mask].X, axis=0)
+#             expression_matrix[d, :] = mean_expression
+#         with open(samples_path + 'mean_gene_expression_' + t + 'cell_type' + ct + '.pickle', 'wb') as handle:
+#             dump(expression_matrix, handle)
 
 '''Loading short info and significant average expression changes'''
 
@@ -79,16 +81,16 @@ gene_expressions = dict()
 for t in timepoints:
     with open(samples_path + 'mean_gene_expression_' + t + '.pickle', 'rb') as handle:
         gene_expressions[t] = load(handle)
-    row_max = np.max(gene_expressions[t], axis=1)
-    row_max[row_max == 0] = 1
-    gene_expressions[t] /= row_max[:, np.newaxis]
+    # row_max = np.max(gene_expressions[t], axis=1)
+    # row_max[row_max == 0] = 1
+    # gene_expressions[t] /= row_max[:, np.newaxis]
 
 untreated_expression = gene_expressions['UT']
 
 threshholds = list(np.arange(0.5, 5.0, 0.2))
-regs = list(np.logspace(-1, -7, 13))
+regs = list(np.logspace(1, -5, 13))
 n_select_genes = 10
-target_timepoints = '24'
+target_timepoints = '3'
 gene_file_name = target_timepoints + 'hour_response_genes.pickle'
 tot_genes_up = set()
 tot_genes_down = set()
@@ -135,3 +137,4 @@ print(tot_genes_down)
 
 
 print('hej')
+

@@ -2,7 +2,7 @@ import scanpy
 import numpy as np
 from pickle import dump, load
 import matplotlib.pyplot as plt
-
+from plotting_tools import plot_multi_hist
 samples_path = '../120Samples/OriginalData/'
 db_name = 'adata_all.h5ad' # obs = ['celltype_sub', 'celltype', 'subject', 'timepoint', '10Xchemistry']
 '''Getting cell type populations'''
@@ -27,37 +27,6 @@ db_name = 'adata_all.h5ad' # obs = ['celltype_sub', 'celltype', 'subject', 'time
 # with open(samples_path+'cell_frequencies.pickle', 'wb') as handle:
 #     dump(cell_frequencies, handle)
 cell_types = ['B', 'CD4T', 'CD8T', 'DC', 'DNT', 'NK', 'hemapoietic stem', 'megakaryocyte', 'monocyte', 'plasma B']
-
-def plot_multi_hist(data_sets, number_of_bins, labels, xlabel="Data sets", ylabel="Data values", title=''):
-    # Computed quantities to aid plotting
-    plt.figure()
-    hist_range = (np.min(data_sets), np.max(data_sets))
-    binned_data_sets = [
-        np.histogram(d, range=hist_range, bins=number_of_bins)[0]
-        for d in data_sets
-    ]
-    binned_maximums = np.max(binned_data_sets, axis=1)
-    x_locations = np.arange(0, sum(binned_maximums), np.max(binned_maximums))
-
-    # The bin_edges are the same for all of the histograms
-    bin_edges = np.linspace(hist_range[0], hist_range[1], number_of_bins + 1)
-    centers = 0.5 * (bin_edges + np.roll(bin_edges, 1))[:-1]
-    heights = np.diff(bin_edges)
-
-    # Cycle through and plot each histogram
-    fig, ax = plt.subplots()
-    for x_loc, binned_data in zip(x_locations, binned_data_sets):
-        lefts = x_loc - 0.5 * binned_data
-        ax.barh(centers, binned_data, height=heights, left=lefts)
-
-    ax.set_xticks(x_locations)
-    ax.set_xticklabels(labels)
-
-    ax.set_ylabel(ylabel)
-    ax.set_xlabel(xlabel)
-    plt.title(title)
-
-    # plt.show()
 
 with open(samples_path+'cell_frequencies.pickle', 'rb') as handle:
     cell_frequencies = load(handle)
