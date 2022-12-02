@@ -2,11 +2,12 @@ import scanpy
 import numpy as np
 from pickle import dump, load
 import matplotlib.pyplot as plt
+from plotting_tools import plot_multi_hist
 
 samples_path = '../120Samples/OriginalData/'
-db_name = 'adata_all.h5ad' # obs = ['celltype_sub', 'celltype', 'subject', 'timepoint', '10Xchemistry']
+db_name = 'adata_all.h5ad'  # obs = ['celltype_sub', 'celltype', 'subject', 'timepoint', '10Xchemistry']
 
-'''Getting and writing significant average expressions'''
+'''Getting and writing significant average expression changes'''
 # data = scanpy.read_h5ad(samples_path+db_name)
 #
 # donors = sorted(set(data.obs['subject']))
@@ -32,40 +33,6 @@ db_name = 'adata_all.h5ad' # obs = ['celltype_sub', 'celltype', 'subject', 'time
 #             dump(expression_matrix, handle)
 
 '''Loading short info and significant average expression changes'''
-
-
-def plot_multi_hist(data_sets, number_of_bins, labels, xlabel="Data sets", ylabel="Data values", title='', log_pop=False):
-    # Computed quantities to aid plotting
-    plt.figure()
-    hist_range = (np.min(data_sets), np.max(data_sets))
-    binned_data_sets = [
-        np.histogram(d, range=hist_range, bins=number_of_bins)[0]
-        for d in data_sets
-    ]
-    if log_pop:
-        binned_data_sets = np.log(binned_data_sets)
-    binned_maximums = np.max(binned_data_sets, axis=1)
-    x_locations = np.arange(0, sum(binned_maximums), np.max(binned_maximums))
-
-    # The bin_edges are the same for all of the histograms
-    bin_edges = np.linspace(hist_range[0], hist_range[1], number_of_bins + 1)
-    centers = 0.5 * (bin_edges + np.roll(bin_edges, 1))[:-1]
-    heights = np.diff(bin_edges)
-
-    # Cycle through and plot each histogram
-    fig, ax = plt.subplots()
-    for x_loc, binned_data in zip(x_locations, binned_data_sets):
-        lefts = x_loc - 0.5 * binned_data
-        ax.barh(centers, binned_data, height=heights, left=lefts)
-
-    ax.set_xticks(x_locations)
-    ax.set_xticklabels(labels)
-
-    ax.set_ylabel(ylabel)
-    ax.set_xlabel(xlabel)
-    plt.title(title)
-
-    # plt.show()
 
 
 with open(samples_path+'obs_info.pickle', 'rb') as handle:

@@ -2,16 +2,17 @@ import numpy
 import scanpy
 import numpy as np
 from pickle import dump, load
+import matplotlib
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
 from collections import defaultdict
 from plotting_tools import plot_multi_hist
-
+from sklearn.decomposition import SparsePCA, PCA
 
 samples_path = '../120Samples/OriginalData/cell_type_specific_expressions/full/'
-target_path = '..   /120Samples/OriginalData/cell_type_specific_expressions/3h genes/'
-salient_genes_file = '../120Samples/OriginalData/3hour_response_genes.pickle'
+target_path = '../120Samples/OriginalData/cell_type_specific_expressions/24h genes/'
+salient_genes_file = '../120Samples/OriginalData/24hour_response_genes.pickle'
 
 with open(salient_genes_file, 'rb') as handle:
     salient_genes = load(handle)
@@ -70,6 +71,12 @@ for tg in timepoint_groups:
             tot_express[tg][ct] = (np.diag((tot_weight[tg][ct] + crnt_weight) ** -1)@(np.diag(tot_weight[tg][ct])@tot_express[tg][ct] + np.diag(crnt_weight)@crnt_express)).fillna(0)
             tot_weight[tg][ct] += crnt_weight
 
+
+'''Plotting Salient gene expressions for each cell type'''
+font = {'weight' : 'bold',
+        'size'   : 40}
+matplotlib.rc('font', **font)
+
 for tg in timepoint_groups:
     for ct in cell_types:
         labels = [gene_name + '_' + ct for gene_name in salient_genes]
@@ -79,3 +86,35 @@ for tg in timepoint_groups:
         plt.savefig(target_path + 'salient_genes_' + ct + ' at ' + tg + '.png', dpi=300)
         # plt.show()
         plt.close()
+
+'''PCA analysis of salient genes'''
+
+# font = {'weight' : 'bold',
+#         'size'   : 12}
+# matplotlib.rc('font', **font)
+#
+# for ct in cell_types:
+#     fig = plt.figure()
+#     ax = fig.add_subplot(111, projection='3d')
+#     print(ct)
+#     tot_data = np.zeros((0, len(salient_genes)))
+#     data = {}
+#     plots = []
+#     plot_names = []
+#     for tg in timepoint_groups:
+#         data[tg] = np.array(tot_express[tg][ct])
+#         tot_data = np.concatenate((tot_data, data[tg]), axis=0)
+#     tot_data = np.log10(tot_data + 0.00001)
+#     n_components = 3
+#     transformer = PCA(n_components=n_components, random_state=0)
+#     transformer.fit(tot_data)
+#     for tg in timepoint_groups:
+#         data_transformed = transformer.transform(data[tg])
+#         crnt_plt, = ax.plot(data_transformed[:, 0], data_transformed[:, 1], data_transformed[:, 2], '*')
+#         plots.append(crnt_plt)
+#         plot_names.append(tg)
+#     ax.legend(plots, plot_names)
+#     ax.set_title(ct)
+#     plt.savefig(target_path + 'PCA_' + ct + '.png', dpi=300)
+#
+#

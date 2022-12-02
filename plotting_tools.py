@@ -2,10 +2,6 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
-font = {'weight' : 'bold',
-        'size'   : 40}
-
-matplotlib.rc('font', **font)
 
 def plot_multi_hist(data_sets, number_of_bins, labels, xlabel="Data sets", ylabel="Data values", title='', hist_range=None):
     # Computed quantities to aid plotting
